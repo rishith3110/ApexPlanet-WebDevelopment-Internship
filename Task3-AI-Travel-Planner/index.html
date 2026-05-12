@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Travel Planner</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#141e30,#243b55);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:1100px;
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(15px);
+    border-radius:25px;
+    padding:30px;
+    color:white;
+    box-shadow:0 10px 40px rgba(0,0,0,0.3);
+    animation:fade 1s ease;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.search-box{
+    display:flex;
+    gap:10px;
+    margin-bottom:25px;
+}
+
+input{
+    flex:1;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    outline:none;
+}
+
+button{
+    padding:14px 20px;
+    border:none;
+    border-radius:12px;
+    background:#00c6ff;
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.05);
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:rgba(255,255,255,0.15);
+    padding:20px;
+    border-radius:20px;
+    transition:0.4s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+.card h2{
+    margin-bottom:15px;
+}
+
+ul{
+    padding-left:18px;
+}
+
+@keyframes fade{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+@media(max-width:768px){
+    .search-box{
+        flex-direction:column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>✈ AI Travel Planner</h1>
+
+<div class="search-box">
+    <input type="text" id="city" placeholder="Enter City or District">
+    <button onclick="planTrip()">Plan Trip</button>
+</div>
+
+<div class="grid">
+
+<div class="card">
+    <h2>🌦 Weather</h2>
+    <div id="weather">No data</div>
+</div>
+
+<div class="card">
+    <h2>🏙 Tourist Places</h2>
+    <div id="places">No data</div>
+</div>
+
+<div class="card">
+    <h2>💰 Budget Estimate</h2>
+    <div id="budget">No data</div>
+</div>
+
+<div class="card">
+    <h2>📅 Best Time to Visit</h2>
+    <div id="time">No data</div>
+</div>
+
+</div>
+</div>
+
+<script>
+async function planTrip(){
+
+    let city=document.getElementById("city").value.trim().toLowerCase();
+
+    if(city===""){
+        alert("Please enter city or district");
+        return;
+    }
+
+    // WEATHER API
+    let apiKey="3140ce13d88d08175a0c8716b18cd506";
+
+    let weatherUrl=`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+    try{
+
+        let response=await fetch(weatherUrl);
+        let data=await response.json();
+
+        document.getElementById("weather").innerHTML=`
+            <p>🌡 Temperature: ${data.main.temp}°C</p>
+            <p>☁ Condition: ${data.weather[0].main}</p>
+            <p>💨 Wind Speed: ${data.wind.speed} km/h</p>
+            <p>💧 Humidity: ${data.main.humidity}%</p>
+        `;
+
+    }catch(error){
+
+        document.getElementById("weather").innerHTML="Weather not found";
+
+    }
+
+    // TOURIST PLACES
+    let places={
+
+        tirupati:["Tirumala","Akasa Ganga","Talakona Falls"],
+        visakhapatnam:["RK Beach","Araku Valley","Kailasagiri"],
+        vijayawada:["Kanaka Durga Temple","Bhavani Island","Undavalli Caves"],
+        hyderabad:["Charminar","Golconda Fort","Ramoji Film City"],
+        warangal:["Warangal Fort","Ramappa Temple","Laknavaram Lake"],
+        bangalore:["Lalbagh","Cubbon Park","Bangalore Palace"],
+        mysore:["Mysore Palace","Chamundi Hills","Brindavan Gardens"],
+        chennai:["Marina Beach","Mahabalipuram","Kapaleeshwarar Temple"],
+        mumbai:["Gateway of India","Marine Drive","Elephanta Caves"],
+        delhi:["India Gate","Red Fort","Lotus Temple"],
+        jaipur:["Hawa Mahal","Amber Fort","City Palace"],
+        goa:["Baga Beach","Anjuna Beach","Fort Aguada"],
+        manali:["Solang Valley","Rohtang Pass","Hidimba Temple"],
+        srinagar:["Dal Lake","Gulmarg","Pahalgam"],
+        kerala:["Munnar","Alleppey","Wayanad"]
+
+    };
+
+    // BUDGET
+    let budgets={
+
+        tirupati:"₹8,000 approx",
+        visakhapatnam:"₹15,000 approx",
+        vijayawada:"₹12,000 approx",
+        hyderabad:"₹18,000 approx",
+        warangal:"₹10,000 approx",
+        bangalore:"₹20,000 approx",
+        mysore:"₹18,000 approx",
+        chennai:"₹16,000 approx",
+        mumbai:"₹25,000 approx",
+        delhi:"₹22,000 approx",
+        jaipur:"₹20,000 approx",
+        goa:"₹35,000 approx",
+        manali:"₹28,000 approx",
+        srinagar:"₹35,000 approx",
+        kerala:"₹30,000 approx"
+
+    };
+
+    // BEST TIME
+    let bestTime={
+
+        tirupati:"September to February",
+        visakhapatnam:"October to March",
+        vijayawada:"October to February",
+        hyderabad:"October to February",
+        warangal:"October to February",
+        bangalore:"October to March",
+        mysore:"October to February",
+        chennai:"November to February",
+        mumbai:"October to February",
+        delhi:"October to March",
+        jaipur:"October to March",
+        goa:"November to February",
+        manali:"March to June",
+        srinagar:"March to October",
+        kerala:"September to March"
+
+    };
+
+    if(places[city]){
+
+        document.getElementById("places").innerHTML=
+        "<ul><li>"+places[city].join("</li><li>")+"</li></ul>";
+
+        document.getElementById("budget").innerHTML=budgets[city];
+
+        document.getElementById("time").innerHTML=bestTime[city];
+
+    }else{
+
+        document.getElementById("places").innerHTML="No tourist data available";
+        document.getElementById("budget").innerHTML="No budget data available";
+        document.getElementById("time").innerHTML="No seasonal data available";
+
+    }
+}
+</script>
+
+</body>
+</html>

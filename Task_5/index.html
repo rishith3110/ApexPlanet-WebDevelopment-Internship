@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudySphere Dashboard</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#f4f7fb;
+    transition:0.3s;
+}
+
+.dark-mode{
+    background:#121212;
+    color:white;
+}
+
+header{
+    background:linear-gradient(135deg,#6a11cb,#2575fc);
+    color:white;
+    padding:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+header h1{
+    font-size:28px;
+}
+
+.toggle-btn{
+    background:white;
+    color:black;
+    padding:10px 15px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.container{
+    width:90%;
+    margin:30px auto;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:white;
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.dark-mode .card{
+    background:#1e1e1e;
+}
+
+.card h2{
+    margin-bottom:20px;
+}
+
+input,textarea{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:none;
+    border-radius:10px;
+    background:#f1f1f1;
+    outline:none;
+}
+
+button{
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#2575fc;
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.03);
+}
+
+.task{
+    background:#f1f1f1;
+    padding:10px;
+    margin-top:10px;
+    border-radius:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.dark-mode .task{
+    background:#333;
+}
+
+.quote{
+    font-size:18px;
+    line-height:1.6;
+}
+
+.progress-box{
+    font-size:20px;
+    margin-top:15px;
+}
+
+@media(max-width:768px){
+
+    header{
+        flex-direction:column;
+        gap:15px;
+        text-align:center;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<h1>📚 StudySphere Dashboard</h1>
+
+<button class="toggle-btn"
+onclick="toggleDarkMode()">
+
+🌙 Toggle Mode
+
+</button>
+
+</header>
+
+<div class="container">
+
+<!-- TASK MANAGER -->
+
+<div class="card">
+
+<h2>✅ Task Manager</h2>
+
+<input type="text"
+id="taskInput"
+placeholder="Enter Task">
+
+<button onclick="addTask()">
+
+Add Task
+
+</button>
+
+<div id="taskList"></div>
+
+</div>
+
+<!-- NOTES -->
+
+<div class="card">
+
+<h2>📝 Quick Notes</h2>
+
+<textarea rows="8"
+id="notes"
+placeholder="Write your notes here...">
+
+</textarea>
+
+<button onclick="saveNotes()">
+
+Save Notes
+
+</button>
+
+</div>
+
+<!-- TIMETABLE -->
+
+<div class="card">
+
+<h2>📅 Daily Timetable</h2>
+
+<p>🌅 Morning : DSA Practice</p>
+
+<p>☀ Afternoon : College Work</p>
+
+<p>🌙 Evening : Web Development</p>
+
+<p>🌃 Night : Revision</p>
+
+</div>
+
+<!-- PROGRESS -->
+
+<div class="card">
+
+<h2>📊 Progress Tracker</h2>
+
+<div class="progress-box"
+id="progress">
+
+Tasks Completed : 0
+
+</div>
+
+</div>
+
+<!-- QUOTES -->
+
+<div class="card">
+
+<h2>💡 Daily Motivation</h2>
+
+<div class="quote">
+
+“Small progress each day adds up to big success.”
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let completedTasks=0;
+
+function addTask(){
+
+    let input=document
+    .getElementById("taskInput");
+
+    let taskText=input.value;
+
+    if(taskText===""){
+
+        alert("Enter a task");
+
+        return;
+    }
+
+    let taskDiv=document
+    .createElement("div");
+
+    taskDiv.classList.add("task");
+
+    taskDiv.innerHTML=`
+
+    ${taskText}
+
+    <button onclick="completeTask(this)">
+    ✔
+    </button>
+
+    `;
+
+    document
+    .getElementById("taskList")
+    .appendChild(taskDiv);
+
+    input.value="";
+}
+
+function completeTask(button){
+
+    button.parentElement.remove();
+
+    completedTasks++;
+
+    document
+    .getElementById("progress")
+    .innerHTML=
+
+    "Tasks Completed : "+completedTasks;
+}
+
+function saveNotes(){
+
+    let notes=document
+    .getElementById("notes").value;
+
+    localStorage.setItem(
+    "studyNotes",
+    notes
+    );
+
+    alert("Notes Saved ✅");
+}
+
+window.onload=function(){
+
+    let savedNotes=
+    localStorage.getItem("studyNotes");
+
+    if(savedNotes){
+
+        document
+        .getElementById("notes")
+        .value=savedNotes;
+    }
+}
+
+function toggleDarkMode(){
+
+    document.body.classList.toggle("dark-mode");
+}
+
+</script>
+
+</body>
+</html>
